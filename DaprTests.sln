@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api1", "src\Api1\Api1.csproj", "{BE12C43B-572C-40C5-8FF5-D3D81A35B230}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{47D11805-0DBC-4D13-A5E9-6AD9537E8DB4}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE12C43B-572C-40C5-8FF5-D3D81A35B230}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE12C43B-572C-40C5-8FF5-D3D81A35B230}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE12C43B-572C-40C5-8FF5-D3D81A35B230}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE12C43B-572C-40C5-8FF5-D3D81A35B230}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
