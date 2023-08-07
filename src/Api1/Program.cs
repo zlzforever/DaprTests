@@ -1,13 +1,22 @@
+using Grpc.Net.Client;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers().AddDapr(x =>
 {
-    x.UseGrpcEndpoint("http://localhost:3501");
-    x.UseHttpEndpoint("http://localhost:50001");
+    x.UseGrpcEndpoint("http://localhost:50001");
+    x.UseHttpEndpoint("http://localhost:3500");
+    x.UseGrpcChannelOptions(new GrpcChannelOptions
+    {
+        HttpHandler = new SocketsHttpHandler
+        {
+            EnableMultipleHttp2Connections = true
+        }
+    });
 });
-builder.Services.AddDaprClient();
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

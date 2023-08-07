@@ -1,4 +1,5 @@
 using Dapr;
+using Dapr.Client;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api1.Controllers;
@@ -6,37 +7,73 @@ namespace Api1.Controllers;
 public record MessageEvent(string MessageType, string Message);
 
 [ApiController]
-[Route("[controller]")]
+[Route("test")]
 public class WeatherForecastController : ControllerBase
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
-
     private readonly ILogger<WeatherForecastController> _logger;
+    private readonly DaprClient _daprClient;
 
-    public WeatherForecastController(ILogger<WeatherForecastController> logger)
+    public WeatherForecastController(ILogger<WeatherForecastController> logger, DaprClient daprClient)
     {
         _logger = logger;
+        _daprClient = daprClient;
     }
 
-    [HttpGet(Name = "GetWeatherForecast")]
-    public IEnumerable<WeatherForecast> Get()
+
+    [HttpPost("sendEvent")]
+    public async Task SendEvent()
     {
-        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+        await _daprClient.PublishEventAsync("pubshub", "inventory", new Widget { });
+        await _daprClient.PublishEventAsync("pubshub", "sub", new { });
     }
 
-    [HttpPost("a")]
-    [Topic("pubsub", "A")]
-    public void A(MessageEvent item)
+    [Topic("pubsub", "sub")]
+    [HttpPost("sub")]
+    public void Sub()
     {
-        _logger.LogInformation($"Receive message: {item.MessageType}: {item.Message}");
+        _logger.LogInformation("sub");
     }
+
+    [Topic("pubsub", "inventory", "event.type ==\"widget\"", 1)]
+    [HttpPost("widgets")]
+    public ActionResult<Stock> HandleWidget(Widget widget, [FromServices] DaprClient daprClient)
+    {
+        _logger.LogInformation("widgets");
+        // Logic
+        return new ActionResult<Stock>(new Stock());
+    }
+
+    [Topic("pubsub", "inventory", "event.type ==\"gadget\"", 2)]
+    [HttpPost("gadgets")]
+    public ActionResult<Stock> HandleGadget(Gadget gadget, [FromServices] DaprClient daprClient)
+    {
+        _logger.LogInformation("gadgets");
+        // Logic
+        return new ActionResult<Stock>(new Stock());
+    }
+
+    [Topic("pubsub", "inventory")]
+    [HttpPost("products")]
+    public ActionResult<Stock> HandleProduct(Product product, [FromServices] DaprClient daprClient)
+    {
+        _logger.LogInformation("products");
+        // Logic
+        return new ActionResult<Stock>(new Stock());
+    }
+}
+
+public class Product
+{
+}
+
+public class Gadget
+{
+}
+
+public class Widget
+{
+}
+
+public class Stock
+{
 }

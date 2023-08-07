@@ -10,8 +10,8 @@
     <ItemGroup>
         <PackageReference Include="Dapr.AspNetCore" Version="1.11.0" />
         <PackageReference Include="Dapr.Client" Version="1.11.0" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.9" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>
