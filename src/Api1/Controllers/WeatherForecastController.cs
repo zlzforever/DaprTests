@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Dapr;
 using Dapr.Client;
 using Microsoft.AspNetCore.Mvc;
@@ -23,57 +24,66 @@ public class WeatherForecastController : ControllerBase
     [HttpPost("sendEvent")]
     public async Task SendEvent()
     {
-        await _daprClient.PublishEventAsync("pubshub", "inventory", new Widget { });
-        await _daprClient.PublishEventAsync("pubshub", "sub", new { });
+        await _daprClient.PublishEventAsync("pubsub", "inventory", new Widget(), new Dictionary<string, string>
+        {
+            { "cloudevent.type", "widget" }
+        });
+        await _daprClient.PublishEventAsync("pubsub", "inventory", new Gadget(), new Dictionary<string, string>
+        {
+            { "cloudevent.type", "gadget" }
+        });
+        await _daprClient.PublishEventAsync("pubsub", "inventory", new Product(), new Dictionary<string, string>
+        {
+            { "cloudevent.type", "product" }
+        });
+        await _daprClient.PublishEventAsync("pubsub", "sub", new { });
     }
 
     [Topic("pubsub", "sub")]
     [HttpPost("sub")]
     public void Sub()
     {
-        _logger.LogInformation("sub");
+        _logger.LogWarning("receive sub event");
     }
 
     [Topic("pubsub", "inventory", "event.type ==\"widget\"", 1)]
     [HttpPost("widgets")]
-    public ActionResult<Stock> HandleWidget(Widget widget, [FromServices] DaprClient daprClient)
+    public void HandleWidget([FromBody] Widget widget)
     {
-        _logger.LogInformation("widgets");
-        // Logic
-        return new ActionResult<Stock>(new Stock());
+        _logger.LogWarning("receive widgets event: " + JsonSerializer.Serialize(widget));
     }
 
     [Topic("pubsub", "inventory", "event.type ==\"gadget\"", 2)]
     [HttpPost("gadgets")]
-    public ActionResult<Stock> HandleGadget(Gadget gadget, [FromServices] DaprClient daprClient)
+    public void HandleGadget([FromBody] Gadget gadget)
     {
-        _logger.LogInformation("gadgets");
-        // Logic
-        return new ActionResult<Stock>(new Stock());
+        _logger.LogWarning("receive gadgets event: " + JsonSerializer.Serialize(gadget));
     }
 
     [Topic("pubsub", "inventory")]
     [HttpPost("products")]
-    public ActionResult<Stock> HandleProduct(Product product, [FromServices] DaprClient daprClient)
+    public void HandleProduct([FromBody] Product product)
     {
-        _logger.LogInformation("products");
-        // Logic
-        return new ActionResult<Stock>(new Stock());
+        _logger.LogWarning("receive products event: " + JsonSerializer.Serialize(product));
     }
 }
 
 public class Product
 {
+    public string P { get; set; } = "Product";
 }
 
 public class Gadget
 {
+    public string G { get; set; } = "Gadget";
 }
 
 public class Widget
 {
+    public string W { get; set; } = "Widget";
 }
 
 public class Stock
 {
+    public string S { get; set; } = "Stock";
 }
