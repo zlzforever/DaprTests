@@ -21,17 +21,27 @@ public class WeatherForecastController : ControllerBase
     }
 
 
-    [HttpPost("sendEvent")]
-    public async Task SendEvent()
+    [HttpPost("sendWidget")]
+    public async Task SendWidget()
     {
         await _daprClient.PublishEventAsync("pubsub", "inventory", new Widget(), new Dictionary<string, string>
         {
             { "cloudevent.type", "widget" }
         });
+    }
+
+    [HttpPost("sendGadget")]
+    public async Task SendGadget()
+    {
         await _daprClient.PublishEventAsync("pubsub", "inventory", new Gadget(), new Dictionary<string, string>
         {
             { "cloudevent.type", "gadget" }
         });
+    }
+
+    [HttpPost("sendProduct")]
+    public async Task SendProduct()
+    {
         await _daprClient.PublishEventAsync("pubsub", "inventory", new Product(), new Dictionary<string, string>
         {
             { "cloudevent.type", "product" }
@@ -39,32 +49,42 @@ public class WeatherForecastController : ControllerBase
         await _daprClient.PublishEventAsync("pubsub", "sub", new { });
     }
 
+    [HttpPost("sendSub")]
+    public async Task SendSub()
+    {
+        await _daprClient.PublishEventAsync("pubsub", "sub", new { });
+    }
+
     [Topic("pubsub", "sub")]
     [HttpPost("sub")]
-    public void Sub()
+    public IActionResult Sub()
     {
         _logger.LogWarning("receive sub event");
+        return Ok();
     }
 
     [Topic("pubsub", "inventory", "event.type ==\"widget\"", 1)]
     [HttpPost("widgets")]
-    public void HandleWidget([FromBody] Widget widget)
+    public IActionResult HandleWidget([FromBody] Widget widget)
     {
         _logger.LogWarning("receive widgets event: " + JsonSerializer.Serialize(widget));
+        return Ok();
     }
 
     [Topic("pubsub", "inventory", "event.type ==\"gadget\"", 2)]
     [HttpPost("gadgets")]
-    public void HandleGadget([FromBody] Gadget gadget)
+    public IActionResult HandleGadget([FromBody] Gadget gadget)
     {
         _logger.LogWarning("receive gadgets event: " + JsonSerializer.Serialize(gadget));
+        return Ok();
     }
 
     [Topic("pubsub", "inventory")]
     [HttpPost("products")]
-    public void HandleProduct([FromBody] Product product)
+    public IActionResult HandleProduct([FromBody] Product product)
     {
         _logger.LogWarning("receive products event: " + JsonSerializer.Serialize(product));
+        return Ok();
     }
 }
 
